@@ -9,16 +9,19 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
+import { BooksService } from './books.service';
 
 import { CreateBookDto, UpdateBookDto } from './dto';
 
 @Controller('books')
 export class BooksController {
+  constructor(private readonly booksService: BooksService) {}
+
   @Get()
   @Version('1')
-  findAll(@Query() paginationQuery) {
+  async findAll(@Query() paginationQuery) {
     const { limit, offset } = paginationQuery;
-    return 'These are all of the books';
+    return await this.booksService.findAll();
   }
 
   @Get(':id')
@@ -29,8 +32,8 @@ export class BooksController {
 
   @Post()
   @Version('1')
-  create(@Body() createBookDto: CreateBookDto) {
-    return createBookDto;
+  async create(@Body() createBookDto: CreateBookDto) {
+    return await this.booksService.create(createBookDto);
   }
 
   @Patch(':id')
