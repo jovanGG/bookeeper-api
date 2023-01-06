@@ -26,8 +26,8 @@ export class BooksController {
 
   @Get(':id')
   @Version('1')
-  findOne(@Param('id') id: string) {
-    return `This is the book ${id}`;
+  async findOne(@Param('id') id: string) {
+    return await this.booksService.findOne(id);
   }
 
   @Post()
@@ -38,13 +38,13 @@ export class BooksController {
 
   @Patch(':id')
   @Version('1')
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-    return `This is the ${updateBookDto} for the Book #${id}`;
+  async update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
+    return await this.booksService.update(id, updateBookDto);
   }
 
   @Delete(':id')
   @Version('1')
-  delete(@Param('id') id: string) {
-    return `Attempting to delete Book #${id}`;
+  async delete(@Param('id') id: string) {
+    return await this.booksService.remove(id);
   }
 }
