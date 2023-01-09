@@ -11,5 +11,5 @@ export default class CreateBookDto {
   readonly description: string;
 
   @IsString({ each: true })
-  readonly specification: string[];
+  readonly specifications: string[];
 }

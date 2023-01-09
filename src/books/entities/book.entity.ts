@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { Specification } from './specification.entity';
 
 @Entity()
 export class Book {
@@ -14,6 +22,13 @@ export class Book {
   @Column()
   description: string;
 
-  @Column('json', { nullable: true })
-  specification: string[];
+  @Column({ default: 0 })
+  recommendations: number;
+
+  @JoinTable()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @ManyToMany((type) => Specification, (specification) => specification.books, {
+    cascade: true,
+  })
+  specifications: Specification[];
 }
