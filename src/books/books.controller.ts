@@ -9,6 +9,7 @@ import {
   Query,
   Version,
 } from '@nestjs/common';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { BooksService } from './books.service';
 
 import { CreateBookDto, UpdateBookDto } from './dto';
@@ -19,9 +20,8 @@ export class BooksController {
 
   @Get()
   @Version('1')
-  async findAll(@Query() paginationQuery) {
-    const { limit, offset } = paginationQuery;
-    return await this.booksService.findAll();
+  async findAll(@Query() paginationQuery: PaginationQueryDto) {
+    return await this.booksService.findAll(paginationQuery);
   }
 
   @Get(':id')

@@ -1,24 +1,20 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 
+import { dataSourceOptions } from './config/data-source';
 import { BooksModule } from './books/books.module';
 import { AppController } from './app.controller';
-import { database, server } from './config';
 import { AppService } from './app.service';
+import { server } from './config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [server, database],
+      load: [server],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-        configService.get('database'),
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     BooksModule,
   ],
   controllers: [AppController],

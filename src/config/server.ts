@@ -1,4 +1,5 @@
 import { registerAs } from '@nestjs/config';
+
 import { API_PREFIX } from './contstants';
 
 export default registerAs('server', () => ({
