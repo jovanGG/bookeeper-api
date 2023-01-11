@@ -7,6 +7,8 @@ import { BooksModule } from './books/books.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { server } from './config';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { server } from './config';
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
     BooksModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
