@@ -1,8 +1,9 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Book } from './book.entity';
 
 @Entity()
-export class Specification {
+export class Genre {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -10,6 +11,6 @@ export class Specification {
   name: string;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @ManyToMany((type) => Book, (book) => book.specifications)
+  @ManyToMany((type) => Book, (book) => book.genres)
   books: Book[];
 }

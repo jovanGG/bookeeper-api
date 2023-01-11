@@ -3,9 +3,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { Specification } from './entities/specification.entity';
-import { Event } from 'src/events/entities/event.entity';
 import { CreateBookDto, UpdateBookDto } from './dto';
+import { Genre } from './entities/genre.entity';
+import { Event } from '../events/entities/event.entity';
 import { Book } from './entities/book.entity';
 
 @Injectable()
@@ -14,8 +14,8 @@ export class BooksService {
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
 
-    @InjectRepository(Specification)
-    private readonly specificationRepository: Repository<Specification>,
+    @InjectRepository(Genre)
+    private readonly genreRepository: Repository<Genre>,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -25,7 +25,7 @@ export class BooksService {
 
     return this.bookRepository.find({
       relations: {
-        specifications: true,
+        genres: true,
       },
       skip: offset,
       take: limit,
@@ -36,7 +36,7 @@ export class BooksService {
     const book = await this.bookRepository.findOne({
       where: { id: +id },
       relations: {
-        specifications: true,
+        genres: true,
       },
     });
 
@@ -48,33 +48,29 @@ export class BooksService {
   }
 
   async create(createBookDto: CreateBookDto) {
-    const specifications = await Promise.all(
-      createBookDto.specifications.map((name) =>
-        this.preloadSpecificationByName(name),
-      ),
+    const genres = await Promise.all(
+      createBookDto.genres.map((name) => this.preloadGenreByName(name)),
     );
 
     const book = this.bookRepository.create({
       ...createBookDto,
-      specifications,
+      genres,
     });
 
     return this.bookRepository.save(book);
   }
 
   async update(id: string, updateBookDto: UpdateBookDto) {
-    const specifications =
-      updateBookDto.specifications &&
+    const genres =
+      updateBookDto.genres &&
       (await Promise.all(
-        updateBookDto.specifications.map((name) =>
-          this.preloadSpecificationByName(name),
-        ),
+        updateBookDto.genres.map((name) => this.preloadGenreByName(name)),
       ));
 
     const book = await this.bookRepository.preload({
       id: +id,
       ...updateBookDto,
-      specifications,
+      genres,
     });
 
     if (!book) {
@@ -115,17 +111,15 @@ export class BooksService {
     }
   }
 
-  private async preloadSpecificationByName(
-    name: string,
-  ): Promise<Specification> {
-    const exisitingSpecification = await this.specificationRepository.findOne({
+  private async preloadGenreByName(name: string): Promise<Genre> {
+    const exisitingGenre = await this.genreRepository.findOne({
       where: { name },
     });
 
-    if (exisitingSpecification) {
-      return exisitingSpecification;
+    if (exisitingGenre) {
+      return exisitingGenre;
     }
 
-    return this.specificationRepository.create({ name });
+    return this.genreRepository.create({ name });
   }
 }
