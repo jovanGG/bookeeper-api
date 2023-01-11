@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Specification } from './specification.entity';
+import { Genre } from './genre.entity';
 
 @Entity()
 export class Book {
@@ -27,8 +27,8 @@ export class Book {
 
   @JoinTable()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @ManyToMany((type) => Specification, (specification) => specification.books, {
+  @ManyToMany((type) => Genre, (genre) => genre.books, {
     cascade: true,
   })
-  specifications: Specification[];
+  genres: Genre[];
 }
