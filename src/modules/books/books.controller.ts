@@ -7,12 +7,13 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   Version,
 } from '@nestjs/common';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { BooksService } from './books.service';
 
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreateBookDto, UpdateBookDto } from './dto';
+import { BooksService } from './books.service';
 
 @Controller('books')
 export class BooksController {
@@ -32,8 +33,9 @@ export class BooksController {
 
   @Post()
   @Version('1')
-  async create(@Body() createBookDto: CreateBookDto) {
-    return await this.booksService.create(createBookDto);
+  async create(@Body() createBookDto: CreateBookDto, @Request() req) {
+    const { sub } = req;
+    return await this.booksService.create(createBookDto, sub);
   }
 
   @Patch(':id')
