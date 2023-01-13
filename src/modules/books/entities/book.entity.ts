@@ -1,8 +1,10 @@
+import { User } from 'src/modules/user/entities/user.entity';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -31,4 +33,7 @@ export class Book {
     cascade: true,
   })
   genres: Genre[];
+
+  @ManyToOne(() => User, (user) => user.books)
+  user: User;
 }

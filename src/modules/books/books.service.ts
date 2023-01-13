@@ -7,6 +7,7 @@ import { CreateBookDto, UpdateBookDto } from './dto';
 import { Genre } from './entities/genre.entity';
 import { Event } from '../events/entities/event.entity';
 import { Book } from './entities/book.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class BooksService {
@@ -17,6 +18,9 @@ export class BooksService {
     @InjectRepository(Genre)
     private readonly genreRepository: Repository<Genre>,
 
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
     private readonly dataSource: DataSource,
   ) {}
 
@@ -26,6 +30,7 @@ export class BooksService {
     return this.bookRepository.find({
       relations: {
         genres: true,
+        user: true,
       },
       skip: offset,
       take: limit,
@@ -37,6 +42,7 @@ export class BooksService {
       where: { id: +id },
       relations: {
         genres: true,
+        user: true,
       },
     });
 
@@ -47,7 +53,11 @@ export class BooksService {
     return book;
   }
 
-  async create(createBookDto: CreateBookDto) {
+  async create(createBookDto: CreateBookDto, userEmail: string) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { email: userEmail },
+    });
+
     const genres = await Promise.all(
       createBookDto.genres.map((name) => this.preloadGenreByName(name)),
     );
@@ -55,6 +65,7 @@ export class BooksService {
     const book = this.bookRepository.create({
       ...createBookDto,
       genres,
+      user,
     });
 
     return this.bookRepository.save(book);
