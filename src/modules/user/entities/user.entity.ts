@@ -1,6 +1,5 @@
 import {
   BaseEntity,
-  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -8,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 import { Book } from 'src/modules/books/entities/book.entity';
 import { UserRoles } from '../utils/constants';
@@ -26,7 +24,9 @@ export class User extends BaseEntity {
   })
   email: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   password: string;
 
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.MEMBER })
@@ -40,10 +40,4 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @BeforeInsert()
-  async setPassword(password: string) {
-    const salt = await bcrypt.genSalt();
-    this.password = await bcrypt.hash(password || this.password, salt);
-  }
 }

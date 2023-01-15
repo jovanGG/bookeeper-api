@@ -30,9 +30,23 @@ export class AuthService {
     return user;
   }
 
-  async generateToken(user: User) {
+  async validateGoogleCredentials(user) {
+    if (!user) {
+      throw new BadRequestException('Unauthenticated');
+    }
+
+    const validUser = await this.userService.getUserByEmail(user.email);
+
+    if (!validUser) {
+      return this.userService.handleOauthUserRegistration(user);
+    }
+
+    return validUser;
+  }
+
+  generateToken(user: User) {
     return {
-      access_token: this.jwtService.sign({
+      accessToken: this.jwtService.sign({
         name: user.name,
         sub: user.id,
       }),
