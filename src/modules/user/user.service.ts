@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
+import { RegisterOauthUserDto } from './dto/register-oauth-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from './entities/user.entity';
 
@@ -16,7 +18,17 @@ export class UserService {
     const user = new User();
     user.name = userRegister.name;
     user.email = userRegister.email;
-    user.password = userRegister.password;
+    user.password = await bcrypt.hash(userRegister.password, 10);
+
+    return await user.save();
+  }
+
+  async handleOauthUserRegistration(
+    userRegister: RegisterOauthUserDto,
+  ): Promise<User> {
+    const user = new User();
+    user.name = userRegister.name;
+    user.email = userRegister.email;
 
     return await user.save();
   }

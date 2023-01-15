@@ -16,7 +16,7 @@ import { server } from './config';
       isGlobal: true,
       load: [server],
     }),
-    TypeOrmModule.forRoot(dataSourceOptions),
+    TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     BooksModule,
     AuthModule,
     UserModule,

@@ -7,8 +7,9 @@ import {
   Version,
 } from '@nestjs/common';
 
-import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { GoogleOauthGuard } from './guards/google-oauth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -18,14 +19,31 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @Version('1')
-  async login(@Request() req): Promise<any> {
+  async loginUser(@Request() req): Promise<any> {
     return this.authService.generateToken(req.user);
+  }
+
+  @UseGuards(GoogleOauthGuard)
+  @Get('google')
+  @Version('1')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async auth() {}
+
+  @UseGuards(GoogleOauthGuard)
+  @Get('google/redirect')
+  @Version('1')
+  async googleAuthCallback(@Request() req) {
+    const validUser = await this.authService.validateGoogleCredentials(
+      req.user,
+    );
+
+    return this.authService.generateToken(validUser);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('user')
   @Version('1')
-  async user(@Request() req): Promise<any> {
+  async getCurrentUser(@Request() req): Promise<any> {
     return req.user;
   }
 }

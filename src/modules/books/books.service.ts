@@ -3,11 +3,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { CreateBookDto, UpdateBookDto } from './dto';
-import { Genre } from './entities/genre.entity';
 import { Event } from '../events/entities/event.entity';
-import { Book } from './entities/book.entity';
+import { CreateBookDto, UpdateBookDto } from './dto';
 import { User } from '../user/entities/user.entity';
+import { Genre } from './entities/genre.entity';
+import { Book } from './entities/book.entity';
 
 @Injectable()
 export class BooksService {
@@ -24,7 +24,7 @@ export class BooksService {
     private readonly dataSource: DataSource,
   ) {}
 
-  findAll(paginationQuery: PaginationQueryDto) {
+  getAllBooks(paginationQuery: PaginationQueryDto) {
     const { limit, offset } = paginationQuery;
 
     return this.bookRepository.find({
@@ -37,7 +37,7 @@ export class BooksService {
     });
   }
 
-  async findOne(id: string) {
+  async getBook(id: string) {
     const book = await this.bookRepository.findOne({
       where: { id: +id },
       relations: {
@@ -53,9 +53,9 @@ export class BooksService {
     return book;
   }
 
-  async create(createBookDto: CreateBookDto, userEmail: string) {
+  async createBook(createBookDto: CreateBookDto, id: number) {
     const user = await this.userRepository.findOneOrFail({
-      where: { email: userEmail },
+      where: { id: id },
     });
 
     const genres = await Promise.all(
@@ -71,7 +71,7 @@ export class BooksService {
     return this.bookRepository.save(book);
   }
 
-  async update(id: string, updateBookDto: UpdateBookDto) {
+  async updateBook(id: string, updateBookDto: UpdateBookDto) {
     const genres =
       updateBookDto.genres &&
       (await Promise.all(
@@ -92,7 +92,7 @@ export class BooksService {
   }
 
   async remove(id: string) {
-    const book = await this.findOne(id);
+    const book = await this.getBook(id);
 
     return this.bookRepository.remove(book);
   }
