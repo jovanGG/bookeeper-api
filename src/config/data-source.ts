@@ -16,7 +16,6 @@ export const dataSourceOptions: DataSourceOptions = {
     charset: 'utf8mb4_unicode_ci',
   },
   synchronize: process.env.APP_ENV === 'local' ? true : false,
-  logging: true,
 };
 
 const dataSource = new DataSource(dataSourceOptions);

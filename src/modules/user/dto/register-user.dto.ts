@@ -10,6 +10,8 @@ export class RegisterUserDto {
   @IsEmail()
   email: string;
 
+  role: string;
+
   @IsNotEmpty()
   @Length(8, 24)
   @Matches(REGEX.PASSWORD_RULE, { message: MESSAGES.PASSWORD_RULE_MESSAGE })
